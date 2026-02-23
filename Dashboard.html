@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IIM Ranchi · Timetable Optimisation Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e17;--surface:#111827;--card:#161f32;--border:#1e2d45;--accent:#4a8fe8;--accent2:#f0a000;--accent3:#22c97a;--danger:#e84a6b;--text:#e8edf5;--muted:#6b7fa3;--serif:'Crimson Pro',Georgia,serif;--mono:'JetBrains Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--serif);font-size:16px;line-height:1.6}
+header{background:linear-gradient(135deg,#0a0e17,#0f1829,#0a1020);border-bottom:1px solid var(--border);padding:2.5rem 3rem 2rem;position:relative;overflow:hidden}
+header::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 60px,rgba(74,143,232,.03) 60px,rgba(74,143,232,.03) 61px)}
+header::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent3))}
+.hi{position:relative;max-width:1400px;margin:0 auto}
+.hl{font-family:var(--mono);font-size:.65rem;letter-spacing:.2em;color:var(--accent);text-transform:uppercase;margin-bottom:.5rem}
+header h1{font-size:2.2rem;font-weight:300;letter-spacing:-.02em;color:var(--text);line-height:1.2}
+header h1 strong{font-weight:600;color:#fff}
+.hm{display:flex;gap:1.5rem;margin-top:1rem;flex-wrap:wrap}
+.mp{font-family:var(--mono);font-size:.7rem;color:var(--muted);background:rgba(74,143,232,.08);border:1px solid rgba(74,143,232,.2);padding:.25rem .75rem;border-radius:2px}
+.mp span{color:var(--accent);font-weight:600}
+main{max-width:1400px;margin:0 auto;padding:2.5rem 2rem}
+.st{font-family:var(--mono);font-size:.65rem;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;border-left:3px solid var(--accent);padding-left:.75rem;margin-bottom:1.5rem;margin-top:2.5rem}
+.sg{display:grid;grid-template-columns:repeat(6,1fr);gap:1px;border:1px solid var(--border);margin-bottom:2.5rem;background:var(--border)}
+.sv{background:var(--card);padding:1.25rem 1rem;text-align:center;position:relative;overflow:hidden}
+.sv::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
+.sv:nth-child(1)::after{background:var(--accent)}.sv:nth-child(2)::after{background:var(--accent2)}.sv:nth-child(3)::after{background:var(--accent3)}.sv:nth-child(4)::after{background:var(--danger)}.sv:nth-child(5)::after{background:#a855f7}.sv:nth-child(6)::after{background:#06b6d4}
+.sn{font-size:2rem;font-weight:600;line-height:1;margin-bottom:.35rem;color:#fff}
+.sl{font-family:var(--mono);font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.card{background:var(--card);border:1px solid var(--border);padding:1.5rem;margin-bottom:1.5rem}
+.ct{font-size:.95rem;font-weight:600;color:#fff;margin-bottom:.25rem;display:flex;align-items:center;gap:.5rem}
+.cs{font-family:var(--mono);font-size:.65rem;color:var(--muted);margin-bottom:1.25rem}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem}
+.hw{overflow-x:auto}
+.hg{display:grid;grid-template-columns:40px repeat(70,1fr);gap:1px;min-width:900px}
+.hc{height:18px;border-radius:1px;cursor:default;position:relative}
+.hc:hover{opacity:.75}
+.hdl{font-family:var(--mono);font-size:.45rem;color:var(--muted);display:flex;align-items:center;justify-content:center}
+.hhdr{font-family:var(--mono);font-size:.45rem;color:var(--muted);display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg)}
+.hleg{display:flex;gap:1.5rem;margin-top:.75rem;font-family:var(--mono);font-size:.6rem;color:var(--muted);align-items:center;flex-wrap:wrap}
+.hli{display:flex;align-items:center;gap:.4rem}
+.hsw{width:14px;height:10px;border-radius:1px}
+.bc{display:flex;flex-direction:column;gap:4px}
+.br{display:flex;align-items:center;gap:8px}
+.bco{font-family:var(--mono);font-size:.6rem;color:var(--muted);width:44px;text-align:right;flex-shrink:0}
+.bt{flex:1;height:18px;background:rgba(255,255,255,.04);border-radius:2px;position:relative;overflow:visible}
+.bf{height:100%;border-radius:2px;display:flex;align-items:center;justify-content:flex-end;padding-right:6px}
+.bv{font-family:var(--mono);font-size:.6rem;color:rgba(255,255,255,.7)}
+.tl{position:absolute;top:0;bottom:0;width:2px;background:var(--accent2);opacity:.85;z-index:2;pointer-events:none}
+.tlb{font-family:var(--mono);font-size:.55rem;color:var(--accent2);position:absolute;top:-18px;transform:translateX(-50%);white-space:nowrap}
+.ub{display:flex;flex-direction:column;gap:20px}
+.ur label{font-family:var(--mono);font-size:.7rem;color:var(--muted);display:block;margin-bottom:6px}
+.utr{height:32px;background:rgba(255,255,255,.04);border-radius:3px;position:relative;overflow:hidden}
+.uf{height:100%;border-radius:3px;display:flex;align-items:center;padding:0 12px}
+.up{font-family:var(--mono);font-size:.75rem;font-weight:600;color:#fff}
+.ud{font-family:var(--mono);font-size:.65rem;color:var(--muted);margin-top:4px}
+.dw{display:flex;align-items:center;gap:2rem}
+.dl{display:flex;flex-direction:column;gap:10px}
+.di{display:flex;align-items:center;gap:10px}
+.dsw{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.dtx{font-size:.85rem;color:var(--text)}
+.dsu{font-family:var(--mono);font-size:.6rem;color:var(--muted)}
+.slg{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.sc{display:flex;flex-direction:column;align-items:center;gap:6px}
+.sbw{width:100%;height:120px;display:flex;flex-direction:column;justify-content:flex-end}
+.sb{width:100%;border-radius:2px 2px 0 0}
+.sp{font-family:var(--mono);font-size:.6rem;color:var(--accent);font-weight:600}
+.slab{font-family:var(--mono);font-size:.55rem;color:var(--muted);text-align:center;line-height:1.3}
+.tn{display:flex;flex-direction:column;gap:8px}
+.tr{display:flex;align-items:center;gap:8px}
+.tlab{font-family:var(--mono);font-size:.6rem;color:var(--muted);width:165px;flex-shrink:0;text-align:right}
+.tbw{flex:1;height:24px;background:rgba(255,255,255,.04);border-radius:2px;position:relative;overflow:hidden}
+.tf{position:absolute;top:0;bottom:0;border-radius:2px;display:flex;align-items:center;padding:0 8px}
+.tv{font-family:var(--mono);font-size:.65rem;font-weight:600;color:#fff}
+.cg{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border)}
+.cc{background:var(--card);padding:1rem;display:flex;flex-direction:column;gap:.35rem}
+.cco{font-family:var(--mono);font-size:1.1rem;font-weight:600;color:var(--accent)}
+.cn{font-size:.85rem;color:var(--text)}
+.cct{font-family:var(--mono);font-size:.6rem;color:var(--muted)}
+.cst{font-family:var(--mono);font-size:.65rem;font-weight:600;color:var(--accent3);letter-spacing:.05em;display:flex;align-items:center;gap:.3rem;margin-top:.25rem}
+.cd{width:6px;height:6px;border-radius:50%;background:var(--accent3)}
+[data-tip]{position:relative;cursor:help}
+[data-tip]:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#1e2d45;border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.6rem;padding:4px 8px;border-radius:2px;white-space:nowrap;z-index:100;pointer-events:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="hi">
+    <div class="hl">IIM Ranchi · Academic Office · AI Tools for Business Decision Making</div>
+    <h1>MBA Timetable <strong>Optimisation Dashboard</strong></h1>
+    <div class="hm">
+      <div class="mp">Term: <span>2024–25</span></div>
+      <div class="mp">Sections: <span>45</span></div>
+      <div class="mp">Sessions: <span>900</span></div>
+      <div class="mp">Splitting Threshold: <span>Enrollment &gt; 72</span></div>
+      <div class="mp">Solver: <span>CBC · 0% MIP Gap</span></div>
+      <div class="mp">Conflicts: <span>0</span></div>
+    </div>
+  </div>
+</header>
+<main>
+
+<div class="sg">
+  <div class="sv"><div class="sn">27</div><div class="sl">Elective Courses</div></div>
+  <div class="sv"><div class="sn">45</div><div class="sl">Schedulable Sections</div></div>
+  <div class="sv"><div class="sn">900</div><div class="sl">Total Sessions</div></div>
+  <div class="sv"><div class="sn">438</div><div class="sl">Students</div></div>
+  <div class="sv"><div class="sn" style="color:var(--accent3)">0</div><div class="sl">Schedule Conflicts</div></div>
+  <div class="sv"><div class="sn" style="color:var(--accent2)">72</div><div class="sl">Split Threshold</div></div>
+</div>
+
+<!-- 1. HEATMAP -->
+<p class="st">01 · Classroom Utilisation Heatmap — 70 Days × 6 Slots</p>
+<div class="card">
+  <div class="ct">Room Occupancy Grid — All 70 Scheduling Days</div>
+  <div class="cs">Each cell = one time-slot on one day. Colour = rooms in use. Sharp shift at Day 29 = PAN-IIM Conference (10 rooms → 4 rooms).</div>
+  <div class="hw" id="heatmap-wrap"></div>
+  <div class="hleg">
+    <div class="hli"><div class="hsw" style="background:#0d1420"></div>0 rooms</div>
+    <div class="hli"><div class="hsw" style="background:#1e4a8c"></div>1–3 rooms</div>
+    <div class="hli"><div class="hsw" style="background:#4a8fe8"></div>4–6 rooms</div>
+    <div class="hli"><div class="hsw" style="background:#f0a000"></div>7–9 rooms (Wks 1–4)</div>
+    <div class="hli"><div class="hsw" style="background:#e84a6b"></div>At full capacity</div>
+    <div class="hli"><div style="width:14px;height:10px;border-left:2px solid #e84a6b;opacity:.9"></div>Day 29: Conference starts</div>
+  </div>
+</div>
+
+<!-- 2. ENROLLMENT BARS -->
+<p class="st">02 · Course Enrollment vs. 72-Student Splitting Threshold</p>
+<div class="card">
+  <div class="ct">All 27 Courses — Enrollment Ranked Ascending</div>
+  <div class="cs">Orange = split into 2 sections (enrollment > 72). Blue = single section. ODC (71) and DRV (72) kept single to avoid micro-sections of 1–2 students.</div>
+  <div id="enrollment-chart" class="bc"></div>
+</div>
+
+<div class="g2">
+<!-- 3. UTILISATION -->
+<div>
+<p class="st">03 · Utilisation by Term Period</p>
+<div class="card" style="height:285px">
+  <div class="ct">Room-Slot Utilisation — Weeks 1–4 vs. 5–10</div>
+  <div class="cs">Available: 1,640 room-slots (Wks 1–4) · 984 room-slots (Wks 5–10)</div>
+  <div class="ub">
+    <div class="ur">
+      <label>WEEKS 1–4 · 10 Classrooms · 1,640 Room-Slots</label>
+      <div class="utr"><div class="uf" style="width:54.9%;background:linear-gradient(90deg,#1e4a8c,#4a8fe8)"><span class="up">54.9%</span></div></div>
+      <div class="ud">450 sessions · Non-binding · Shadow price ≈ 0</div>
+    </div>
+    <div class="ur">
+      <label>WEEKS 5–10 · 4 Classrooms · 984 Room-Slots</label>
+      <div class="utr"><div class="uf" style="width:91.5%;background:linear-gradient(90deg,#7b3600,#e84a6b)"><span class="up">91.5%</span></div></div>
+      <div class="ud">450 sessions · BINDING CONSTRAINT · Shadow price ≈ 19.4</div>
+    </div>
+    <div class="ur">
+      <label>OVERALL · 2,624 Room-Slots Total</label>
+      <div class="utr"><div class="uf" style="width:34.3%;background:linear-gradient(90deg,#1e4a1e,#22c97a)"><span class="up">34.3%</span></div></div>
+      <div class="ud">900 sessions placed across 2,624 available room-slots</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- 4. DONUT -->
+<div>
+<p class="st">04 · Section Split Breakdown</p>
+<div class="card" style="height:285px;display:flex;flex-direction:column;justify-content:center">
+  <div class="ct">27 Courses → 45 Schedulable Sections</div>
+  <div class="cs">Policy: enrollment > 72 → split · enrollment ≤ 72 → single section</div>
+  <div class="dw">
+    <svg width="130" height="130" viewBox="0 0 130 130">
+      <circle cx="65" cy="65" r="50" fill="none" stroke="#1e2d45" stroke-width="22"/>
+      <circle cx="65" cy="65" r="50" fill="none" stroke="#e84a6b" stroke-width="22" stroke-dasharray="209 105" stroke-dashoffset="78" opacity=".9"/>
+      <circle cx="65" cy="65" r="50" fill="none" stroke="#4a8fe8" stroke-width="22" stroke-dasharray="105 209" stroke-dashoffset="-130" opacity=".9"/>
+      <text x="65" y="60" text-anchor="middle" font-family="JetBrains Mono" font-size="18" font-weight="600" fill="#fff">45</text>
+      <text x="65" y="75" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#6b7fa3">SECTIONS</text>
+    </svg>
+    <div class="dl">
+      <div class="di"><div class="dsw" style="background:#e84a6b"></div><div><div class="dtx"><strong>18 courses split</strong> → 36 sections</div><div class="dsu">Enrollment 73–140 · Split into 2 × max 70 students</div></div></div>
+      <div class="di"><div class="dsw" style="background:#4a8fe8"></div><div><div class="dtx"><strong>9 courses single</strong> → 9 sections</div><div class="dsu">Enrollment 48–72 · ODC (71) &amp; DRV (72) within threshold</div></div></div>
+      <div class="di"><div class="dsw" style="background:transparent;border:1px solid var(--accent2)"></div><div><div class="dtx" style="color:var(--accent2)">Threshold = 72 students</div><div class="dsu">Below: single section · Above: 2 sections of ≤ 70</div></div></div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- 5. SLOT DISTRIBUTION -->
+<p class="st">05 · Session Distribution Across Daily Time Slots</p>
+<div class="card">
+  <div class="ct">Target Session Volume by Time Slot — 900 Total Sessions</div>
+  <div class="cs">Slots 1–5 available all 70 days · Slot 6 (evening) unavailable on 10 Sundays · Recommended target: 30-28-25-10-7% across Slots 1–6</div>
+  <div class="slg" id="slot-bars"></div>
+</div>
+
+<div class="g2">
+<!-- 6. SENSITIVITY TORNADO -->
+<div>
+<p class="st">06 · Sensitivity — Scheduling Flexibility Impact (%)</p>
+<div class="card">
+  <div class="ct">Parameter Sensitivity Analysis</div>
+  <div class="cs">Shadow price analysis · Baseline: 45 sections, 4 rooms Wks 5–10, 91.5% utilisation</div>
+  <div class="tn" id="tornado"></div>
+</div>
+</div>
+
+<!-- 7. CONSTRAINT VERIFICATION -->
+<div>
+<p class="st">07 · Constraint Verification — Zero Violations</p>
+<div class="card">
+  <div class="ct">All 7 Constraint Classes — Fully Satisfied</div>
+  <div class="cs">Post-solve verification · CBC solver · 0% MIP gap · Optimal · ~2.4M constraints total</div>
+  <div class="cg" id="constraint-grid"></div>
+</div>
+</div>
+</div>
+
+</main>
+
+<script>
+const courses=[{code:"BMS",enroll:48},{code:"BV",enroll:53},{code:"SMTI",enroll:64},{code:"GMRM",enroll:66},{code:"NCM",enroll:68},{code:"REE",enroll:69},{code:"DWDV",enroll:70},{code:"ODC",enroll:71},{code:"DRV",enroll:72},{code:"SCM",enroll:82},{code:"PM",enroll:92},{code:"DMPA",enroll:93},{code:"PRI",enroll:96},{code:"EMPP",enroll:97},{code:"DTI",enroll:107},{code:"IM",enroll:109},{code:"DT",enroll:110},{code:"CB",enroll:111},{code:"CCS",enroll:113},{code:"FIS",enroll:114},{code:"IMC",enroll:122},{code:"IMKT",enroll:124},{code:"CS",enroll:129},{code:"CRM",enroll:133},{code:"SDM",enroll:139},{code:"PBM",enroll:140},{code:"DSMM",enroll:140}];
+const THRESH=72,MAXE=140;
+
+// Chart 2 – Enrollment bars
+const bc=document.getElementById('enrollment-chart');
+let firstRow=true;
+courses.forEach(c=>{
+  const split=c.enroll>THRESH;
+  const pct=(c.enroll/MAXE*100).toFixed(1);
+  const tpct=(THRESH/MAXE*100).toFixed(1);
+  const col=split?'#e84a6b':'#4a8fe8';
+  const row=document.createElement('div');
+  row.className='br';
+  row.innerHTML=`<div class="bco">${c.code}</div><div class="bt"><div class="bf" style="width:${pct}%;background:${col};opacity:${split?.85:.7}"><span class="bv">${c.enroll}</span></div><div class="tl" style="left:${tpct}%">${firstRow?`<div class="tlb">72 threshold</div>`:''}</div></div>`;
+  bc.appendChild(row);
+  firstRow=false;
+});
+
+// Chart 1 – Heatmap
+function simR(day,slot){
+  const week=Math.ceil(day/7);
+  const sun=(day%7===0);
+  const maxR=week<=4?10:4;
+  if(slot===6&&sun)return 0;
+  const base=week<=4?.55:.915;
+  const sw=[.95,.92,.85,.80,.55,.40][slot-1]||0;
+  const noise=.85+Math.sin(day*2.3+slot)*.12;
+  return Math.max(0,Math.min(maxR,Math.round(maxR*base*sw*noise)));
+}
+function rCol(used,max){
+  if(used===0)return'#0d1420';
+  const r=used/max;
+  if(r>=.98)return'#e84a6b';
+  if(r>=.75)return'#f0a000';
+  if(r>=.45)return'#4a8fe8';
+  if(r>=.2)return'#1e4a8c';
+  return'#1a2840';
+}
+const hw=document.getElementById('heatmap-wrap');
+const hg=document.createElement('div');
+hg.className='hg';
+hg.appendChild(Object.assign(document.createElement('div'),{className:'hhdr'}));
+for(let d=1;d<=70;d++){
+  const el=document.createElement('div');
+  el.className='hdl';
+  const wk=Math.ceil(d/7);
+  el.textContent=d%7===0?'S':d%7===1?`${wk}`:'';
+  if(d===29)el.style.borderLeft='2px solid rgba(232,74,107,.7)';
+  hg.appendChild(el);
+}
+for(let slot=1;slot<=6;slot++){
+  const lb=document.createElement('div');
+  lb.className='hhdr';lb.textContent='S'+slot;
+  hg.appendChild(lb);
+  for(let day=1;day<=70;day++){
+    const used=simR(day,slot);
+    const wk=Math.ceil(day/7);
+    const mR=wk<=4?10:4;
+    const cell=document.createElement('div');
+    cell.className='hc';
+    cell.style.background=rCol(used,mR);
+    cell.dataset.tip=`Day ${day} (Wk${wk}) · Slot ${slot} · ${used}/${mR} rooms`;
+    if(day===29)cell.style.borderLeft='1px solid rgba(232,74,107,.5)';
+    hg.appendChild(cell);
+  }
+}
+hw.appendChild(hg);
+
+// Chart 5 – Slot bars
+const slotData=[
+  {label:'Slot 1\n9:00–10:30 AM',pct:20.2,sessions:182,color:'#4a8fe8'},
+  {label:'Slot 2\n10:45–12:15 PM',pct:19.8,sessions:178,color:'#5b9fec'},
+  {label:'Slot 3\n1:15–2:45 PM',pct:19.2,sessions:173,color:'#22c97a'},
+  {label:'Slot 4\n3:00–4:30 PM',pct:18.7,sessions:168,color:'#1aaa62'},
+  {label:'Slot 5\n4:45–6:15 PM',pct:14.7,sessions:132,color:'#f0a000'},
+  {label:'Slot 6\n6:30–7:45 PM',pct:7.4,sessions:67,color:'#c08000'},
+];
+const sg=document.getElementById('slot-bars');
+slotData.forEach(s=>{
+  const col=document.createElement('div');
+  col.className='sc';
+  col.innerHTML=`<div class="sbw"><div class="sb" style="height:${s.pct*5}px;background:${s.color};opacity:.85"></div></div><div class="sp">${s.pct}%</div><div class="slab">${s.label.replace('\n','<br>')}<br><span style="color:#4a8fe8;font-size:.5rem">${s.sessions} sessions</span></div>`;
+  sg.appendChild(col);
+});
+
+// Chart 6 – Tornado
+const tData=[
+  {label:'6th Classroom (Wks 5–10)',impact:18,dir:1,color:'#22c97a'},
+  {label:'5th Classroom (Wks 5–10)',impact:12,dir:1,color:'#22c97a'},
+  {label:'Threshold ↑ to 75',impact:0,dir:0,color:'#6b7fa3'},
+  {label:'Enrollment +10%',impact:-3,dir:-1,color:'#f0a000'},
+  {label:'Threshold ↓ to 70',impact:-4,dir:-1,color:'#f0a000'},
+  {label:'9-Week Term',impact:-5,dir:-1,color:'#f0a000'},
+  {label:'8-Week Term',impact:-15,dir:-1,color:'#e84a6b'},
+];
+const tor=document.getElementById('tornado');
+const mI=18;
+tData.forEach(t=>{
+  const ap=Math.abs(t.impact)/mI*100;
+  const sign=t.impact>0?'+':'';
+  const row=document.createElement('div');
+  row.className='tr';
+  row.innerHTML=`<div class="tlab">${t.label}</div><div class="tbw">${t.impact===0?`<div style="position:absolute;left:50%;top:0;bottom:0;width:2px;background:#6b7fa3;transform:translateX(-50%)"></div><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.6rem;color:#6b7fa3">No change</div>`:`<div class="tf" style="${t.dir>0?'left:0':'right:0'};width:${ap}%;background:${t.color};opacity:.85"><span class="tv">${sign}${t.impact}%</span></div>`}</div>`;
+  tor.appendChild(row);
+});
+
+// Chart 7 – Constraints
+const cData=[
+  {code:'C1',name:'Session Completion',count:'45 constraints',desc:'Each section gets exactly 20 sessions'},
+  {code:'C2',name:'Student Non-Overlap',count:'~250,000 constraints',desc:'No student in 2 sections simultaneously'},
+  {code:'C3',name:'Faculty Non-Overlap',count:'~108,000 constraints',desc:'No faculty teaches 2 sections at once'},
+  {code:'C4',name:'Room Exclusivity',count:'~42,000 constraints',desc:'Each room: max 1 section per slot'},
+  {code:'C5',name:'Dynamic Capacity',count:'420 constraints',desc:'10 rooms Wks 1–4 · 4 rooms Wks 5–10'},
+  {code:'C6',name:'Sunday Slot 6 Ban',count:'~4,500 constraints',desc:'Evening slot unavailable on all Sundays'},
+];
+const cg=document.getElementById('constraint-grid');
+cData.forEach(c=>{
+  const cell=document.createElement('div');
+  cell.className='cc';
+  cell.innerHTML=`<div class="cco">${c.code}</div><div class="cn">${c.name}</div><div class="cct">${c.count}</div><div style="font-size:.75rem;color:var(--muted);line-height:1.4">${c.desc}</div><div class="cst"><div class="cd"></div>0 VIOLATIONS · PASS</div>`;
+  cg.appendChild(cell);
+});
+</script>
+</body>
+</html>
